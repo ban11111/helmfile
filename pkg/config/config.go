@@ -28,7 +28,7 @@ func NewCLIConfigImpl(g *GlobalImpl) error {
 	if len(optsSet) > 0 {
 		set := map[string]any{}
 		for i := range optsSet {
-			ops := strings.Split(optsSet[i], ",")
+			ops := parseCommaSeparatedString(optsSet[i])
 			for j := range ops {
 				op := strings.SplitN(ops[j], "=", 2)
 				k := maputil.ParseKey(op[0])
@@ -41,4 +41,41 @@ func NewCLIConfigImpl(g *GlobalImpl) error {
 	}
 
 	return nil
+}
+
+func parseCommaSeparatedString(input string) []string {
+	var (
+		result  []string
+		current strings.Builder
+		escaped bool
+	)
+
+	for i := 0; i < len(input); i++ {
+		char := input[i]
+
+		if escaped {
+			if char == ',' {
+				current.WriteByte(',')
+			} else {
+				current.WriteByte('\\')
+				current.WriteByte(char)
+			}
+			escaped = false
+			continue
+		}
+
+		if char == '\\' {
+			escaped = true
+			continue
+		}
+
+		if char == ',' {
+			result = append(result, current.String())
+			current.Reset()
+		} else {
+			current.WriteByte(char)
+		}
+	}
+	result = append(result, current.String())
+	return result
 }
