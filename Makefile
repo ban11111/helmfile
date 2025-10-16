@@ -69,6 +69,11 @@ static-linux:
 	env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOFLAGS=-mod=readonly go build -o "dist/helmfile_linux_amd64" -ldflags="$(GO_BUILD_VERSION_LDFLAGS)" ${TARGETS}
 .PHONY: static-linux
 
+# 需要跑这个build
+static-linux-v1:
+	env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOFLAGS=-mod=readonly go build -o "dist/helmfile_linux_amd64" -ldflags="$(GO_BUILD_VERSION_LDFLAGS) -X github.com/helmfile/helmfile/pkg/runtime.v1Mode=true" ${TARGETS}
+.PHONY: static-linux-v1
+
 static-linux-amd64:
 	env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOFLAGS=-mod=readonly go build -o "dist/helmfile_linux_amd64" -ldflags="$(GO_BUILD_VERSION_LDFLAGS)" ${TARGETS}
 .PHONY: static-linux-amd64
